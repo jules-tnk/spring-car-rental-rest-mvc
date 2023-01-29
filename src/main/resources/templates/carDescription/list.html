@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title th:text="#{carDescription.list.headline}" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 th:text="#{carDescription.list.headline}" class="flex-grow-1" />
+                <div>
+                    <a th:href="@{/carDescriptions/add}" th:text="#{carDescription.list.createNew}" class="btn btn-primary ms-2" />
+                </div>
+            </div>
+            <div th:replace="~{fragments/utils::searchFilter(object='carDescription')}" />
+            <div th:if="${carDescriptions.empty}" th:text="#{carDescription.list.empty}" />
+            <div th:if="${!carDescriptions.empty}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th th:text="#{carDescription.id.label}" scope="col" />
+                            <th th:text="#{carDescription.model.label}" scope="col" />
+                            <th th:text="#{carDescription.brand.label}" scope="col" />
+                            <th th:text="#{carDescription.color.label}" scope="col" />
+                            <th th:text="#{carDescription.imgUrl.label}" scope="col" />
+                            <th th:text="#{carDescription.pricePerHour.label}" scope="col" />
+                            <th th:text="#{carDescription.maxSpeed.label}" scope="col" />
+                            <th th:text="#{carDescription.maxPower.label}" scope="col" />
+                            <th><!-- --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="carDescription : ${carDescriptions}">
+                            <td th:text="${carDescription.id}" />
+                            <td th:text="${carDescription.model}" />
+                            <td th:text="${carDescription.brand}" />
+                            <td th:text="${carDescription.color}" />
+                            <td th:text="${carDescription.imgUrl}" />
+                            <td th:text="${carDescription.pricePerHour}" />
+                            <td th:text="${carDescription.maxSpeed}" />
+                            <td th:text="${carDescription.maxPower}" />
+                            <td>
+                                <div class="float-end text-nowrap">
+                                    <a th:href="@{/carDescriptions/edit/{id}(id=${carDescription.id})}" th:text="#{carDescription.list.edit}" class="btn btn-sm btn-info" />
+                                    <form th:action="@{/carDescriptions/delete/{id}(id=${carDescription.id})}"
+                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
+                                        <button th:text="#{carDescription.list.delete}" type="submit" class="btn btn-sm btn-danger" />
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

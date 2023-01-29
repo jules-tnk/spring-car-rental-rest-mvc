@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title th:text="#{driver.list.headline}" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 th:text="#{driver.list.headline}" class="flex-grow-1" />
+                <div>
+                    <a th:href="@{/drivers/add}" th:text="#{driver.list.createNew}" class="btn btn-primary ms-2" />
+                </div>
+            </div>
+            <div th:replace="~{fragments/utils::searchFilter(object='driver')}" />
+            <div th:if="${drivers.empty}" th:text="#{driver.list.empty}" />
+            <div th:if="${!drivers.empty}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th th:text="#{driver.id.label}" scope="col" />
+                            <th th:text="#{driver.firstName.label}" scope="col" />
+                            <th th:text="#{driver.lastName.label}" scope="col" />
+                            <th th:text="#{driver.email.label}" scope="col" />
+                            <th th:text="#{driver.phoneNumber.label}" scope="col" />
+                            <th th:text="#{driver.password.label}" scope="col" />
+                            <th><!-- --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="driver : ${drivers}">
+                            <td th:text="${driver.id}" />
+                            <td th:text="${driver.firstName}" />
+                            <td th:text="${driver.lastName}" />
+                            <td th:text="${driver.email}" />
+                            <td th:text="${driver.phoneNumber}" />
+                            <td th:text="${driver.password}" />
+                            <td>
+                                <div class="float-end text-nowrap">
+                                    <a th:href="@{/drivers/edit/{id}(id=${driver.id})}" th:text="#{driver.list.edit}" class="btn btn-sm btn-info" />
+                                    <form th:action="@{/drivers/delete/{id}(id=${driver.id})}"
+                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
+                                        <button th:text="#{driver.list.delete}" type="submit" class="btn btn-sm btn-danger" />
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

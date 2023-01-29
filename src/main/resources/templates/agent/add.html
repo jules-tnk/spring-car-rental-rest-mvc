@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title th:text="#{agent.add.headline}" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 th:text="#{agent.add.headline}" class="flex-grow-1" />
+                <div>
+                    <a th:href="@{/agents}" th:text="#{agent.add.back}" class="btn btn-secondary" />
+                </div>
+            </div>
+            <div th:replace="~{fragments/forms::globalErrors('agent')}" />
+            <form th:action="${T(io.bootify.spring_car_rental.util.WebUtils).getRequest().requestURI}" method="post">
+                <div th:replace="~{fragments/forms::inputRow(object='agent', field='firstName')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='agent', field='lastName')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='agent', field='email')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='agent', field='phoneNumber', type='number')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='agent', field='password')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='agent', field='agency', type='select')}" />
+                <input type="submit" th:value="#{agent.add.headline}" class="btn btn-primary mt-4" />
+            </form>
+        </div>
+    </body>
+</html>

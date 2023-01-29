@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title th:text="#{agency.list.headline}" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 th:text="#{agency.list.headline}" class="flex-grow-1" />
+                <div>
+                    <a th:href="@{/agencys/add}" th:text="#{agency.list.createNew}" class="btn btn-primary ms-2" />
+                </div>
+            </div>
+            <div th:if="${agencys.empty}" th:text="#{agency.list.empty}" />
+            <div th:if="${!agencys.empty}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th th:text="#{agency.id.label}" scope="col" />
+                            <th th:text="#{agency.name.label}" scope="col" />
+                            <th th:text="#{agency.address.label}" scope="col" />
+                            <th th:text="#{agency.city.label}" scope="col" />
+                            <th th:text="#{agency.manager.label}" scope="col" />
+                            <th><!-- --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="agency : ${agencys}">
+                            <td th:text="${agency.id}" />
+                            <td th:text="${agency.name}" />
+                            <td th:text="${agency.address}" />
+                            <td th:text="${agency.city}" />
+                            <td th:text="${agency.manager}" />
+                            <td>
+                                <div class="float-end text-nowrap">
+                                    <a th:href="@{/agencys/edit/{id}(id=${agency.id})}" th:text="#{agency.list.edit}" class="btn btn-sm btn-info" />
+                                    <form th:action="@{/agencys/delete/{id}(id=${agency.id})}"
+                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
+                                        <button th:text="#{agency.list.delete}" type="submit" class="btn btn-sm btn-danger" />
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

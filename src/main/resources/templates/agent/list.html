@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title th:text="#{agent.list.headline}" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 th:text="#{agent.list.headline}" class="flex-grow-1" />
+                <div>
+                    <a th:href="@{/agents/add}" th:text="#{agent.list.createNew}" class="btn btn-primary ms-2" />
+                </div>
+            </div>
+            <div th:replace="~{fragments/utils::searchFilter(object='agent')}" />
+            <div th:if="${agents.empty}" th:text="#{agent.list.empty}" />
+            <div th:if="${!agents.empty}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th th:text="#{agent.id.label}" scope="col" />
+                            <th th:text="#{agent.firstName.label}" scope="col" />
+                            <th th:text="#{agent.lastName.label}" scope="col" />
+                            <th th:text="#{agent.email.label}" scope="col" />
+                            <th th:text="#{agent.phoneNumber.label}" scope="col" />
+                            <th th:text="#{agent.password.label}" scope="col" />
+                            <th th:text="#{agent.agency.label}" scope="col" />
+                            <th><!-- --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="agent : ${agents}">
+                            <td th:text="${agent.id}" />
+                            <td th:text="${agent.firstName}" />
+                            <td th:text="${agent.lastName}" />
+                            <td th:text="${agent.email}" />
+                            <td th:text="${agent.phoneNumber}" />
+                            <td th:text="${agent.password}" />
+                            <td th:text="${agent.agency}" />
+                            <td>
+                                <div class="float-end text-nowrap">
+                                    <a th:href="@{/agents/edit/{id}(id=${agent.id})}" th:text="#{agent.list.edit}" class="btn btn-sm btn-info" />
+                                    <form th:action="@{/agents/delete/{id}(id=${agent.id})}"
+                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
+                                        <button th:text="#{agent.list.delete}" type="submit" class="btn btn-sm btn-danger" />
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title th:text="#{car.list.headline}" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 th:text="#{car.list.headline}" class="flex-grow-1" />
+                <div>
+                    <a th:href="@{/cars/add}" th:text="#{car.list.createNew}" class="btn btn-primary ms-2" />
+                </div>
+            </div>
+            <div th:if="${cars.empty}" th:text="#{car.list.empty}" />
+            <div th:if="${!cars.empty}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th th:text="#{car.id.label}" scope="col" />
+                            <th th:text="#{car.licensePlate.label}" scope="col" />
+                            <th th:text="#{car.isAvailable.label}" scope="col" />
+                            <th th:text="#{car.carDescription.label}" scope="col" />
+                            <th><!-- --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="car : ${cars}">
+                            <td th:text="${car.id}" />
+                            <td th:text="${car.licensePlate}" />
+                            <td th:text="${car.isAvailable}" />
+                            <td th:text="${car.carDescription}" />
+                            <td>
+                                <div class="float-end text-nowrap">
+                                    <a th:href="@{/cars/edit/{id}(id=${car.id})}" th:text="#{car.list.edit}" class="btn btn-sm btn-info" />
+                                    <form th:action="@{/cars/delete/{id}(id=${car.id})}"
+                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
+                                        <button th:text="#{car.list.delete}" type="submit" class="btn btn-sm btn-danger" />
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

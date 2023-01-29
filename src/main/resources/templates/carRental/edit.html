@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title th:text="#{carRental.edit.headline}" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 th:text="#{carRental.edit.headline}" class="flex-grow-1" />
+                <div>
+                    <a th:href="@{/carRentals}" th:text="#{carRental.edit.back}" class="btn btn-secondary" />
+                </div>
+            </div>
+            <div th:replace="~{fragments/forms::globalErrors('carRental')}" />
+            <form th:action="${T(io.bootify.spring_car_rental.util.WebUtils).getRequest().requestURI}" method="post">
+                <div th:replace="~{fragments/forms::inputRow(object='carRental', field='startDate', inputClass='js-datepicker')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='carRental', field='endDate', inputClass='js-datepicker')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='carRental', field='isPaymentCompleted', type='checkbox')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='carRental', field='status', type='radio')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='carRental', field='isWithDriver', type='checkbox')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='carRental', field='car', type='select')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='carRental', field='tenant', type='select')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='carRental', field='agentForConfirmation', type='select')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='carRental', field='agentForReturn', type='select')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='carRental', field='driver', type='select')}" />
+                <input type="submit" th:value="#{carRental.edit.headline}" class="btn btn-primary mt-4" />
+            </form>
+        </div>
+    </body>
+</html>

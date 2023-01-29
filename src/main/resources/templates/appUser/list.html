@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title th:text="#{appUser.list.headline}" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 th:text="#{appUser.list.headline}" class="flex-grow-1" />
+                <div>
+                    <a th:href="@{/appUsers/add}" th:text="#{appUser.list.createNew}" class="btn btn-primary ms-2" />
+                </div>
+            </div>
+            <div th:if="${appUsers.empty}" th:text="#{appUser.list.empty}" />
+            <div th:if="${!appUsers.empty}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th th:text="#{appUser.id.label}" scope="col" />
+                            <th th:text="#{appUser.firstName.label}" scope="col" />
+                            <th th:text="#{appUser.lastName.label}" scope="col" />
+                            <th th:text="#{appUser.email.label}" scope="col" />
+                            <th th:text="#{appUser.phoneNumber.label}" scope="col" />
+                            <th><!-- --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="appUser : ${appUsers}">
+                            <td th:text="${appUser.id}" />
+                            <td th:text="${appUser.firstName}" />
+                            <td th:text="${appUser.lastName}" />
+                            <td th:text="${appUser.email}" />
+                            <td th:text="${appUser.phoneNumber}" />
+                            <td>
+                                <div class="float-end text-nowrap">
+                                    <a th:href="@{/appUsers/edit/{id}(id=${appUser.id})}" th:text="#{appUser.list.edit}" class="btn btn-sm btn-info" />
+                                    <form th:action="@{/appUsers/delete/{id}(id=${appUser.id})}"
+                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
+                                        <button th:text="#{appUser.list.delete}" type="submit" class="btn btn-sm btn-danger" />
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

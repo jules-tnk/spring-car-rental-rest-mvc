@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title th:text="#{carRental.list.headline}" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 th:text="#{carRental.list.headline}" class="flex-grow-1" />
+                <div>
+                    <a th:href="@{/carRentals/add}" th:text="#{carRental.list.createNew}" class="btn btn-primary ms-2" />
+                </div>
+            </div>
+            <div th:if="${carRentals.empty}" th:text="#{carRental.list.empty}" />
+            <div th:if="${!carRentals.empty}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th th:text="#{carRental.id.label}" scope="col" />
+                            <th th:text="#{carRental.startDate.label}" scope="col" />
+                            <th th:text="#{carRental.endDate.label}" scope="col" />
+                            <th th:text="#{carRental.isPaymentCompleted.label}" scope="col" />
+                            <th th:text="#{carRental.status.label}" scope="col" />
+                            <th th:text="#{carRental.isWithDriver.label}" scope="col" />
+                            <th th:text="#{carRental.car.label}" scope="col" />
+                            <th th:text="#{carRental.tenant.label}" scope="col" />
+                            <th><!-- --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="carRental : ${carRentals}">
+                            <td th:text="${carRental.id}" />
+                            <td th:text="${carRental.startDate}" />
+                            <td th:text="${carRental.endDate}" />
+                            <td th:text="${carRental.isPaymentCompleted}" />
+                            <td th:text="${carRental.status}" />
+                            <td th:text="${carRental.isWithDriver}" />
+                            <td th:text="${carRental.car}" />
+                            <td th:text="${carRental.tenant}" />
+                            <td>
+                                <div class="float-end text-nowrap">
+                                    <a th:href="@{/carRentals/edit/{id}(id=${carRental.id})}" th:text="#{carRental.list.edit}" class="btn btn-sm btn-info" />
+                                    <form th:action="@{/carRentals/delete/{id}(id=${carRental.id})}"
+                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
+                                        <button th:text="#{carRental.list.delete}" type="submit" class="btn btn-sm btn-danger" />
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

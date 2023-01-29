@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title th:text="#{payment.list.headline}" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 th:text="#{payment.list.headline}" class="flex-grow-1" />
+                <div>
+                    <a th:href="@{/payments/add}" th:text="#{payment.list.createNew}" class="btn btn-primary ms-2" />
+                </div>
+            </div>
+            <div th:if="${payments.empty}" th:text="#{payment.list.empty}" />
+            <div th:if="${!payments.empty}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th th:text="#{payment.id.label}" scope="col" />
+                            <th th:text="#{payment.amount.label}" scope="col" />
+                            <th th:text="#{payment.date.label}" scope="col" />
+                            <th th:text="#{payment.method.label}" scope="col" />
+                            <th th:text="#{payment.payment.label}" scope="col" />
+                            <th><!-- --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="payment : ${payments}">
+                            <td th:text="${payment.id}" />
+                            <td th:text="${payment.amount}" />
+                            <td th:text="${payment.date}" />
+                            <td th:text="${payment.method}" />
+                            <td th:text="${payment.getCarRentalId}" />
+                            <td>
+                                <div class="float-end text-nowrap">
+                                    <a th:href="@{/payments/edit/{id}(id=${payment.id})}" th:text="#{payment.list.edit}" class="btn btn-sm btn-info" />
+                                    <form th:action="@{/payments/delete/{id}(id=${payment.id})}"
+                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
+                                        <button th:text="#{payment.list.delete}" type="submit" class="btn btn-sm btn-danger" />
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

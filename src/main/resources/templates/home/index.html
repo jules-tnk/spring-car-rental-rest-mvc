@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title th:text="#{home.index.headline}" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <h1 th:text="#{home.index.headline}" class="mb-4" />
+            <p th:utext="#{home.index.text}" />
+            <p th:utext="#{home.index.swagger}" class="mb-5" />
+            <div class="col-md-4 mb-5">
+                <h4 th:text="#{home.index.exploreEntities}" class="mb-3" />
+                <div class="list-group">
+                    <a th:href="@{/cars}" th:text="#{car.list.headline}" class="list-group-item list-group-item-action" />
+                    <a th:href="@{/carRentals}" th:text="#{carRental.list.headline}" class="list-group-item list-group-item-action" />
+                    <a th:href="@{/payments}" th:text="#{payment.list.headline}" class="list-group-item list-group-item-action" />
+                    <a th:href="@{/carDescriptions}" th:text="#{carDescription.list.headline}" class="list-group-item list-group-item-action" />
+                    <a th:href="@{/appUsers}" th:text="#{appUser.list.headline}" class="list-group-item list-group-item-action" />
+                    <a th:href="@{/agencys}" th:text="#{agency.list.headline}" class="list-group-item list-group-item-action" />
+                    <a th:href="@{/managers}" th:text="#{manager.list.headline}" class="list-group-item list-group-item-action" />
+                    <a th:href="@{/agents}" th:text="#{agent.list.headline}" class="list-group-item list-group-item-action" />
+                    <a th:href="@{/clients}" th:text="#{client.list.headline}" class="list-group-item list-group-item-action" />
+                    <a th:href="@{/drivers}" th:text="#{driver.list.headline}" class="list-group-item list-group-item-action" />
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

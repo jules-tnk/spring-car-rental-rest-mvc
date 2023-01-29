@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title th:text="#{manager.list.headline}" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 th:text="#{manager.list.headline}" class="flex-grow-1" />
+                <div>
+                    <a th:href="@{/managers/add}" th:text="#{manager.list.createNew}" class="btn btn-primary ms-2" />
+                </div>
+            </div>
+            <div th:replace="~{fragments/utils::searchFilter(object='manager')}" />
+            <div th:if="${managers.empty}" th:text="#{manager.list.empty}" />
+            <div th:if="${!managers.empty}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th th:text="#{manager.id.label}" scope="col" />
+                            <th th:text="#{manager.firstName.label}" scope="col" />
+                            <th th:text="#{manager.lastName.label}" scope="col" />
+                            <th th:text="#{manager.email.label}" scope="col" />
+                            <th th:text="#{manager.phoneNumber.label}" scope="col" />
+                            <th th:text="#{manager.password.label}" scope="col" />
+                            <th><!-- --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="manager : ${managers}">
+                            <td th:text="${manager.id}" />
+                            <td th:text="${manager.firstName}" />
+                            <td th:text="${manager.lastName}" />
+                            <td th:text="${manager.email}" />
+                            <td th:text="${manager.phoneNumber}" />
+                            <td th:text="${manager.password}" />
+                            <td>
+                                <div class="float-end text-nowrap">
+                                    <a th:href="@{/managers/edit/{id}(id=${manager.id})}" th:text="#{manager.list.edit}" class="btn btn-sm btn-info" />
+                                    <form th:action="@{/managers/delete/{id}(id=${manager.id})}"
+                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
+                                        <button th:text="#{manager.list.delete}" type="submit" class="btn btn-sm btn-danger" />
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
