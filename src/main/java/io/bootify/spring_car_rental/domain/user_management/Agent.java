@@ -22,7 +22,7 @@ import lombok.Setter;
 @Setter
 public class Agent extends AppUser {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "agency_id", nullable = false)
     private Agency agency;
 
@@ -36,4 +36,6 @@ public class Agent extends AppUser {
     public String getRole() {
         return UserRole.AGENT;
     }
+
+
 }

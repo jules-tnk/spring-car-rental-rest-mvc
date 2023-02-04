@@ -8,6 +8,7 @@ import io.bootify.spring_car_rental.util.NotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -15,9 +16,11 @@ import org.springframework.stereotype.Service;
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public ClientServiceImpl(final ClientRepository clientRepository) {
+    public ClientServiceImpl(final ClientRepository clientRepository, PasswordEncoder passwordEncoder) {
         this.clientRepository = clientRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -59,6 +62,7 @@ public class ClientServiceImpl implements ClientService {
     public Long create(final ClientDTO clientDTO) {
         final Client client = new Client();
         mapToEntity(clientDTO, client);
+        client.setPassword(passwordEncoder.encode(clientDTO.getPassword()));
         return clientRepository.save(client).getId();
     }
 

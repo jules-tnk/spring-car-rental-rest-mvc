@@ -42,7 +42,7 @@ public class Payment {
     @Column
     private String method;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "payment_id", nullable = false)
     private CarRental carRental;
 

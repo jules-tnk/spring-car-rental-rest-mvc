@@ -1,29 +1,32 @@
 package io.bootify.spring_car_rental.rest_controller.client_controller;
 
+import io.bootify.spring_car_rental.DTO.CarRentalDTO;
 import io.bootify.spring_car_rental.DTO.incoming_request.CarRentalRequest;
+import io.bootify.spring_car_rental.DTO.response.ProfileResponse;
+import io.bootify.spring_car_rental.domain.Car;
 import io.bootify.spring_car_rental.domain.CarRental;
 import io.bootify.spring_car_rental.domain.RentalStatus;
-import io.bootify.spring_car_rental.repos.AppUserRepository;
-import io.bootify.spring_car_rental.repos.CarRentalRepository;
-import io.bootify.spring_car_rental.repos.CarRepository;
-import io.bootify.spring_car_rental.repos.ClientRepository;
+import io.bootify.spring_car_rental.domain.user_management.AppUser;
+import io.bootify.spring_car_rental.domain.user_management.Driver;
+import io.bootify.spring_car_rental.repos.*;
 import io.bootify.spring_car_rental.service.impl.CarRentalServiceImpl;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api-client/", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -34,24 +37,27 @@ public class ClientRoleController {
     private final ClientRepository clientRepository;
     private final CarRepository carRepository;
     private AppUserRepository appUserRepository;
+    private final DriverRepository driverRepository;
 
     public ClientRoleController(CarRentalServiceImpl carRentalService,
                                 CarRentalRepository carRentalRepository,
                                 ClientRepository clientRepository,
                                 CarRepository carRepository,
-                                AppUserRepository appUserRepository) {
+                                AppUserRepository appUserRepository,
+                                DriverRepository driverRepository) {
         this.carRentalService = carRentalService;
         this.carRentalRepository = carRentalRepository;
         this.clientRepository = clientRepository;
         this.carRepository = carRepository;
         this.appUserRepository = appUserRepository;
+        this.driverRepository = driverRepository;
     }
 
 
     @PostMapping(value = "/rental")
     @ApiResponse(responseCode = "201")
     public ResponseEntity<Void> createCarRental(
-            @RequestBody @Valid final CarRentalRequest carRentalRequest) {
+            @RequestBody @Valid final CarRentalRequest carRentalRequest) throws NotFoundException {
 
         // Retrieve username (email) from security context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -60,7 +66,6 @@ public class ClientRoleController {
         }
 
         String currentUserEmail = authentication.getName();
-
         System.out.println("Current user "+currentUserEmail);
 
         CarRental newCarRental = new CarRental();
@@ -71,14 +76,24 @@ public class ClientRoleController {
         );
 
         // find and set first car available by car description id
-        newCarRental.setCar(
-                carRepository.findFirstByCarDescription_IdAndAndIsAvailableIsTrue(
-                        carRentalRequest.getCarDescriptionId()
-                )
+        Optional<Car> carToRentOpt = carRepository.findFirstByCarDescription_IdAndAndIsAvailableIsTrue(
+                carRentalRequest.getCarDescriptionId()
         );
+        try {
+
+            if (carToRentOpt.isEmpty()){
+                throw new NotFoundException("No car available");
+            }
+        }
+        catch (Exception e) {
+            throw new NotFoundException("No car available");
+        }
+
+        newCarRental.setCar(carToRentOpt.get());
+        carToRentOpt.get().setIsAvailable(false);
+        carRepository.save(carToRentOpt.get());
 
         // set start and end date from dates in request
-        //DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         newCarRental.setStartDate(
                 LocalDate.parse(carRentalRequest.getStartDateString(), dateFormatter)
@@ -88,16 +103,52 @@ public class ClientRoleController {
                 LocalDate.parse(carRentalRequest.getEndDateString(), dateFormatter)
         );
 
+        if (carRentalRequest.getIsWithDriver()){
+            newCarRental.setIsWithDriver(true);
 
-        newCarRental.setIsWithDriver(
-                carRentalRequest.getIsWithDriver()
-        );
+            Optional<Driver> driverOpt = driverRepository.findFirstByIsAvailableIsTrue();
+            if (driverOpt.isEmpty()){
+                throw new NotFoundException("No driver available");
+            }
+            driverOpt.get().setIsAvailable(false);
+            driverRepository.save(driverOpt.get());
+            newCarRental.setDriver(driverOpt.get());
+        }
+
+
         newCarRental.setStatus(RentalStatus.RESERVED);
 
-        // set car new availability
-
+        // save the new car rental
         carRentalRepository.save(newCarRental);
 
         return new ResponseEntity<>(null, HttpStatus.CREATED);
+    }
+
+    @GetMapping(value = "/profile")
+    @ApiResponse(responseCode = "200")
+    public ResponseEntity<ProfileResponse> getProfileInfo() {
+
+        // Retrieve username (email) from security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if ((authentication instanceof AnonymousAuthenticationToken)) {
+            return null;
+        }
+
+        String currentUserEmail = authentication.getName();
+        System.out.println("Current user "+currentUserEmail);
+        AppUser currentUser = appUserRepository.findByEmailIgnoreCase(currentUserEmail);
+
+        ProfileResponse profileResponse = new ProfileResponse();
+        profileResponse.setCarRentalHistory(
+                carRentalService.findByTenantEmail(currentUserEmail)
+        );
+
+        if (currentUser.getRole().equals("DRIVER")) {
+            profileResponse.setMissionHistory(
+                    carRentalService.findByDriverEmail(currentUserEmail)
+            );
+        }
+
+        return new ResponseEntity<>(profileResponse, HttpStatus.CREATED);
     }
 }

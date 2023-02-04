@@ -25,4 +25,6 @@ public class AppUserDTO {
     @Size(max = 255)
     private String password;
 
+    private String role;
+
 }

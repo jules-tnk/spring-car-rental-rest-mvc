@@ -101,8 +101,8 @@ public class CarDescriptionServiceImpl implements CarDescriptionService {
     public String getReferencedWarning(final Long id) {
         final CarDescription carDescription = carDescriptionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException());
-        if (!carDescription.getCarDescriptionCars().isEmpty()) {
-            return WebUtils.getMessage("carDescription.car.oneToMany.referenced", carDescription.getCarDescriptionCars().iterator().next().getId());
+        if (!carDescription.getCars().isEmpty()) {
+            return WebUtils.getMessage("carDescription.car.oneToMany.referenced", carDescription.getCars().iterator().next().getId());
         }
         return null;
     }

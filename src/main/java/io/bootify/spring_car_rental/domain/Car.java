@@ -45,7 +45,7 @@ public class Car {
     @OneToMany(mappedBy = "car")
     private Set<CarRental> carCarRentals;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "car_description_id", nullable = false)
     private CarDescription carDescription;
 

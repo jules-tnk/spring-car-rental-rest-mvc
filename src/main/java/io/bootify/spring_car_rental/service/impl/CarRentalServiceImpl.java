@@ -1,5 +1,6 @@
 package io.bootify.spring_car_rental.service.impl;
 
+import io.bootify.spring_car_rental.DTO.response.CarRentalResponseDTO;
 import io.bootify.spring_car_rental.domain.user_management.Agent;
 import io.bootify.spring_car_rental.domain.user_management.AppUser;
 import io.bootify.spring_car_rental.domain.Car;
@@ -49,6 +50,22 @@ public class CarRentalServiceImpl implements CarRentalService {
     }
 
     @Override
+    public List<CarRentalResponseDTO> findByTenantEmail(String email) {
+        final List<CarRental> carRentals = carRentalRepository.findByTenant_EmailOrderById(email);
+        return carRentals.stream()
+                .map((carRental) -> mapToResponseDTO(carRental, new CarRentalResponseDTO()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CarRentalResponseDTO> findByDriverEmail(String email) {
+        final List<CarRental> carRentals = carRentalRepository.findByDriver_EmailOrderById(email);
+        return carRentals.stream()
+                .map((carRental) -> mapToResponseDTO(carRental, new CarRentalResponseDTO()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public CarRentalDTO get(final Long id) {
         return carRentalRepository.findById(id)
                 .map(carRental -> mapToDTO(carRental, new CarRentalDTO()))
@@ -88,6 +105,19 @@ public class CarRentalServiceImpl implements CarRentalService {
         carRentalDTO.setAgentForReturn(carRental.getAgentForReturn() == null ? null : carRental.getAgentForReturn().getId());
         carRentalDTO.setDriver(carRental.getDriver() == null ? null : carRental.getDriver().getId());
         return carRentalDTO;
+    }
+
+    private CarRentalResponseDTO mapToResponseDTO(final CarRental carRental, final CarRentalResponseDTO carRentalResponseDTO) {
+        carRentalResponseDTO.setId(carRental.getId());
+        carRentalResponseDTO.setStartDate(carRental.getStartDate());
+        carRentalResponseDTO.setEndDate(carRental.getEndDate());
+        carRentalResponseDTO.setIsPaymentCompleted(carRental.getIsPaymentCompleted());
+        carRentalResponseDTO.setStatus(carRental.getStatus());
+        carRentalResponseDTO.setIsWithDriver(carRental.getIsWithDriver());
+        carRentalResponseDTO.setCarModel(carRental.getCar() == null ? null : carRental.getCar().getCarDescription().getModel());
+        carRentalResponseDTO.setTenantEmail(carRental.getTenant() == null ? null : carRental.getTenant().getEmail());
+        carRentalResponseDTO.setDriverEmail(carRental.getDriver() == null ? null : carRental.getDriver().getEmail());
+        return carRentalResponseDTO;
     }
 
     private CarRental mapToEntity(final CarRentalDTO carRentalDTO, final CarRental carRental) {

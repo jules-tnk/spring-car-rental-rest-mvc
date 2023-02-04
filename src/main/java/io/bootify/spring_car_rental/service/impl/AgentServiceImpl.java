@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -20,12 +21,15 @@ public class AgentServiceImpl implements AgentService {
 
     private final AgentRepository agentRepository;
     private final AgencyRepository agencyRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public AgentServiceImpl(final AgentRepository agentRepository,
-            final AgencyRepository agencyRepository) {
+                            final AgencyRepository agencyRepository, PasswordEncoder passwordEncoder) {
         this.agentRepository = agentRepository;
         this.agencyRepository = agencyRepository;
+        this.passwordEncoder = passwordEncoder;
     }
+
 
     @Override
     public List<AgentDTO> findAll(final String filter) {
@@ -58,6 +62,7 @@ public class AgentServiceImpl implements AgentService {
     public Long create(final AgentDTO agentDTO) {
         final Agent agent = new Agent();
         mapToEntity(agentDTO, agent);
+        agent.setPassword(passwordEncoder.encode(agentDTO.getPassword()));
         return agentRepository.save(agent).getId();
     }
 

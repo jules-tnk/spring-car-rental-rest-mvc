@@ -13,12 +13,14 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import java.util.Set;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Agency {
 
     @Id
@@ -45,10 +47,15 @@ public class Agency {
     private String city;
 
     @OneToOne
-    @JoinColumn(name = "manager_id", nullable = false)
+    @JoinColumn(name = "manager_id")
     private Manager manager;
 
     @OneToMany(mappedBy = "agency")
     private Set<Agent> agencyAgents;
 
+    public Agency(String name, String address, String city) {
+        this.name = name;
+        this.address = address;
+        this.city = city;
+    }
 }

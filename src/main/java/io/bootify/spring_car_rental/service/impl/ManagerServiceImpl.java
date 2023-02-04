@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -17,9 +18,11 @@ import org.springframework.stereotype.Service;
 public class ManagerServiceImpl implements ManagerService {
 
     private final ManagerRepository managerRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public ManagerServiceImpl(final ManagerRepository managerRepository) {
+    public ManagerServiceImpl(final ManagerRepository managerRepository, PasswordEncoder passwordEncoder) {
         this.managerRepository = managerRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -53,6 +56,7 @@ public class ManagerServiceImpl implements ManagerService {
     public Long create(final ManagerDTO managerDTO) {
         final Manager manager = new Manager();
         mapToEntity(managerDTO, manager);
+        manager.setPassword(passwordEncoder.encode(managerDTO.getPassword()));
         return managerRepository.save(manager).getId();
     }
 
@@ -91,8 +95,8 @@ public class ManagerServiceImpl implements ManagerService {
     public String getReferencedWarning(final Long id) {
         final Manager manager = managerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException());
-        if (manager.getManager() != null) {
-            return WebUtils.getMessage("manager.agency.oneToOne.referenced", manager.getManager().getId());
+        if (manager.getAgency() != null) {
+            return WebUtils.getMessage("manager.agency.oneToOne.referenced", manager.getAgency().getId());
         }
         return null;
     }

@@ -25,4 +25,6 @@ public class DriverDTO {
     @Size(max = 255)
     private String password;
 
+    private Boolean isAvailable;
+
 }

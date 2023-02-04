@@ -47,7 +47,7 @@ public class JwtSecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/api/**").hasAnyAuthority(UserRole.AGENT, UserRole.MANAGER, UserRole.DRIVER)
-                .requestMatchers("/api-client/**").hasAuthority(UserRole.CLIENT)
+                .requestMatchers("/api-client/**").hasAnyAuthority(UserRole.CLIENT, UserRole.DRIVER)
                     .anyRequest().permitAll().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().authenticationEntryPoint((request, response, ex) -> {

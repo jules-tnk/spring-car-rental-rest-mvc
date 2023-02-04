@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api/agents", produces = MediaType.APPLICATION_JSON_VALUE)
 @SecurityRequirement(name = "bearer-jwt")
 public class AgentResource {
-
     private final AgentService agentService;
 
     public AgentResource(final AgentService agentService) {

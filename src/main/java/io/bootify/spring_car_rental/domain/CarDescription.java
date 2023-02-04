@@ -58,7 +58,7 @@ public class CarDescription {
     private Integer seatNumber;
 
     @OneToMany(mappedBy = "carDescription")
-    private Set<Car> carDescriptionCars;
+    private Set<Car> cars;
 
     public CarDescription(String model,
                           String brand,

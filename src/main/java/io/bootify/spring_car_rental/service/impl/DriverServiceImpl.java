@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -17,9 +18,11 @@ import org.springframework.stereotype.Service;
 public class DriverServiceImpl implements DriverService {
 
     private final DriverRepository driverRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public DriverServiceImpl(final DriverRepository driverRepository) {
+    public DriverServiceImpl(final DriverRepository driverRepository, PasswordEncoder passwordEncoder) {
         this.driverRepository = driverRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -53,6 +56,7 @@ public class DriverServiceImpl implements DriverService {
     public Long create(final DriverDTO driverDTO) {
         final Driver driver = new Driver();
         mapToEntity(driverDTO, driver);
+        driver.setPassword(passwordEncoder.encode(driverDTO.getPassword()));
         return driverRepository.save(driver).getId();
     }
 
@@ -91,8 +95,8 @@ public class DriverServiceImpl implements DriverService {
     public String getReferencedWarning(final Long id) {
         final Driver driver = driverRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException());
-        if (!driver.getDriverCarRentals().isEmpty()) {
-            return WebUtils.getMessage("driver.carRental.manyToOne.referenced", driver.getDriverCarRentals().iterator().next().getId());
+        if (!driver.getMissions().isEmpty()) {
+            return WebUtils.getMessage("driver.carRental.manyToOne.referenced", driver.getMissions().iterator().next().getId());
         }
         return null;
     }
