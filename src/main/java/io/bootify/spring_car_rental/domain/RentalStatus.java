@@ -5,6 +5,7 @@ public enum RentalStatus {
 
     RESERVED,
     TAKEN,
-    RETURNED
+    RETURNED,
+    CANCELED
 
 }

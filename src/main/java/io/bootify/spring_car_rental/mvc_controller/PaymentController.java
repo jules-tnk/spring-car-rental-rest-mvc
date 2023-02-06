@@ -7,6 +7,7 @@ import io.bootify.spring_car_rental.service.interf.PaymentService;
 import io.bootify.spring_car_rental.util.WebUtils;
 import jakarta.validation.Valid;
 import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,6 +57,31 @@ public class PaymentController {
         if (bindingResult.hasErrors()) {
             return "payment/add";
         }
+        paymentService.create(paymentDTO);
+        redirectAttributes.addFlashAttribute(WebUtils.MSG_SUCCESS, WebUtils.getMessage("payment.create.success"));
+        return "redirect:/payments";
+    }
+
+    @GetMapping("/add/{id}")
+    public String addFromCarRental(final Model model, @PathVariable final Long id) {
+        PaymentDTO paymentDTO = new PaymentDTO();
+        paymentDTO.setCarRentalId(id);
+        model.addAttribute("payment", paymentDTO);
+        return "payment/add_from_car_rental";
+    }
+
+    @PostMapping("/add/{id}")
+    public String addFromCarRental(@ModelAttribute("payment") @Valid final PaymentDTO paymentDTO,
+                      final BindingResult bindingResult,
+                      final RedirectAttributes redirectAttributes,
+                      @PathVariable final Long id) {
+        if (bindingResult.hasErrors()) {
+            System.out.println("bindingResult.hasErrors() = " + bindingResult.getAllErrors());
+            return "payment/add_from_car_rental";
+        }
+        System.out.println("paymentDTO1 = " + paymentDTO);
+        paymentDTO.setCarRentalId(id);
+        System.out.println("paymentDTO2 = " + paymentDTO);
         paymentService.create(paymentDTO);
         redirectAttributes.addFlashAttribute(WebUtils.MSG_SUCCESS, WebUtils.getMessage("payment.create.success"));
         return "redirect:/payments";

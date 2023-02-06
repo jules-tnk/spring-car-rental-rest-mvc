@@ -1,14 +1,16 @@
 package io.bootify.spring_car_rental.DTO;
 
-import jakarta.validation.constraints.NotNull;
+
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 
 @Getter
 @Setter
+@ToString
 public class PaymentDTO {
 
     private Long id;
@@ -20,7 +22,7 @@ public class PaymentDTO {
     @Size(max = 255)
     private String method;
 
-    @NotNull
+    //@NotNull
     private Long carRentalId;
 
 }

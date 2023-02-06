@@ -1,7 +1,7 @@
 package io.bootify.spring_car_rental.rest_controller.client_controller;
 
-import io.bootify.spring_car_rental.DTO.CarRentalDTO;
 import io.bootify.spring_car_rental.DTO.incoming_request.CarRentalRequest;
+import io.bootify.spring_car_rental.DTO.response.CarRentalResponseDTO;
 import io.bootify.spring_car_rental.DTO.response.ProfileResponse;
 import io.bootify.spring_car_rental.domain.Car;
 import io.bootify.spring_car_rental.domain.CarRental;
@@ -21,11 +21,9 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -150,5 +148,16 @@ public class ClientRoleController {
         }
 
         return new ResponseEntity<>(profileResponse, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/history/{id}")
+    public ResponseEntity<CarRentalResponseDTO> getCarRental(@PathVariable final Long id) {
+        return ResponseEntity.ok(carRentalService.findByIdForRestResponse(id));
+    }
+
+    @GetMapping("cancel/{id}")
+    public ResponseEntity<Void> cancelCarRental(@PathVariable final Long id) {
+        carRentalService.cancelCarRental(id);
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 }

@@ -17,7 +17,6 @@
                 <div th:replace="~{fragments/forms::inputRow(object='payment', field='amount')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='payment', field='date', inputClass='js-datepicker')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='payment', field='method')}" />
-                <div th:replace="~{fragments/forms::inputRow(object='payment', field='carRentalId', type='select')}" />
                 <input type="submit" th:value="#{payment.add.headline}" class="btn btn-primary mt-4" />
             </form>
         </div>

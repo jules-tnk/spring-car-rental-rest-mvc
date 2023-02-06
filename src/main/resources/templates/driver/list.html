@@ -23,7 +23,7 @@
                             <th th:text="#{driver.lastName.label}" scope="col" />
                             <th th:text="#{driver.email.label}" scope="col" />
                             <th th:text="#{driver.phoneNumber.label}" scope="col" />
-                            <th th:text="#{driver.password.label}" scope="col" />
+                            <th th:text="#{driver.available.label}" scope="col" />
                             <th><!-- --></th>
                         </tr>
                     </thead>
@@ -34,7 +34,7 @@
                             <td th:text="${driver.lastName}" />
                             <td th:text="${driver.email}" />
                             <td th:text="${driver.phoneNumber}" />
-                            <td th:text="${driver.password}" />
+                            <td th:text="${driver.isAvailable}" />
                             <td>
                                 <div class="float-end text-nowrap">
                                     <a th:href="@{/drivers/edit/{id}(id=${driver.id})}" th:text="#{driver.list.edit}" class="btn btn-sm btn-info" />

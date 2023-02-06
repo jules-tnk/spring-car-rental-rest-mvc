@@ -16,6 +16,8 @@ public interface CarRentalService {
 
     CarRentalDTO get(final Long id);
 
+    CarRentalResponseDTO findByIdForRestResponse(Long id);
+
     Long create(final CarRentalDTO carRentalDTO);
 
     void update(final Long id, final CarRentalDTO carRentalDTO);
@@ -24,4 +26,5 @@ public interface CarRentalService {
 
     String getReferencedWarning(final Long id);
 
+    void cancelCarRental(Long id);
 }

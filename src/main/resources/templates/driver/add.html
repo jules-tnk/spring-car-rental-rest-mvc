@@ -19,6 +19,7 @@
                 <div th:replace="~{fragments/forms::inputRow(object='driver', field='email')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='driver', field='phoneNumber', type='number')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='driver', field='password')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='driver', field='isAvailable', type='checkbox')}" />
                 <input type="submit" th:value="#{driver.add.headline}" class="btn btn-primary mt-4" />
             </form>
         </div>

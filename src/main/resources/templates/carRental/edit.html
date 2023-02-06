@@ -17,6 +17,7 @@
                 <div th:replace="~{fragments/forms::inputRow(object='carRental', field='startDate', inputClass='js-datepicker')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='carRental', field='endDate', inputClass='js-datepicker')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='carRental', field='isPaymentCompleted', type='checkbox')}" />
+                <a class="btn btn-primary" th:href="@{/payments/add/{id}(id=${carRental.id})}">Add payment</a>
                 <div th:replace="~{fragments/forms::inputRow(object='carRental', field='status', type='radio')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='carRental', field='isWithDriver', type='checkbox')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='carRental', field='car', type='select')}" />

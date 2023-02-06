@@ -1,6 +1,7 @@
 package io.bootify.spring_car_rental.service.impl;
 
 import io.bootify.spring_car_rental.DTO.response.CarRentalResponseDTO;
+import io.bootify.spring_car_rental.domain.RentalStatus;
 import io.bootify.spring_car_rental.domain.user_management.Agent;
 import io.bootify.spring_car_rental.domain.user_management.AppUser;
 import io.bootify.spring_car_rental.domain.Car;
@@ -69,6 +70,13 @@ public class CarRentalServiceImpl implements CarRentalService {
     public CarRentalDTO get(final Long id) {
         return carRentalRepository.findById(id)
                 .map(carRental -> mapToDTO(carRental, new CarRentalDTO()))
+                .orElseThrow(() -> new NotFoundException());
+    }
+
+    @Override
+    public CarRentalResponseDTO findByIdForRestResponse(Long id) {
+        return carRentalRepository.findById(id)
+                .map(carRental -> mapToResponseDTO(carRental, new CarRentalResponseDTO()))
                 .orElseThrow(() -> new NotFoundException());
     }
 
@@ -153,6 +161,14 @@ public class CarRentalServiceImpl implements CarRentalService {
             return WebUtils.getMessage("carRental.payment.oneToMany.referenced", carRental.getPaymentPayments().iterator().next().getId());
         }
         return null;
+    }
+
+    @Override
+    public void cancelCarRental(Long id) {
+        final CarRental carRental = carRentalRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException());
+        carRental.setStatus(RentalStatus.CANCELED);
+        carRentalRepository.save(carRental);
     }
 
 }
