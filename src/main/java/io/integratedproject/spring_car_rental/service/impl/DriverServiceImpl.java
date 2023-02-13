@@ -1,12 +1,16 @@
 package io.integratedproject.spring_car_rental.service.impl;
 
+import io.integratedproject.spring_car_rental.entity.CarRental;
 import io.integratedproject.spring_car_rental.entity.user_management.Driver;
 import io.integratedproject.spring_car_rental.DTO.user_management.DriverDTO;
+import io.integratedproject.spring_car_rental.repository.CarRentalRepository;
 import io.integratedproject.spring_car_rental.repository.DriverRepository;
 import io.integratedproject.spring_car_rental.service.interf.DriverService;
 import io.integratedproject.spring_car_rental.util.NotFoundException;
 import io.integratedproject.spring_car_rental.util.WebUtils;
 import jakarta.transaction.Transactional;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
@@ -19,10 +23,13 @@ public class DriverServiceImpl implements DriverService {
 
     private final DriverRepository driverRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CarRentalRepository carRentalRepository;
 
-    public DriverServiceImpl(final DriverRepository driverRepository, PasswordEncoder passwordEncoder) {
+    public DriverServiceImpl(final DriverRepository driverRepository, PasswordEncoder passwordEncoder,
+                             CarRentalRepository carRentalRepository) {
         this.driverRepository = driverRepository;
         this.passwordEncoder = passwordEncoder;
+        this.carRentalRepository = carRentalRepository;
     }
 
     @Override
@@ -67,7 +74,30 @@ public class DriverServiceImpl implements DriverService {
         mapToEntity(driverDTO, driver);
         driverRepository.save(driver);
     }
+    public Driver selectAvailableDriver(LocalDate startDate, LocalDate endDate){
+        List<Driver> allDrivers = driverRepository.findAll();
+        for (Driver driver: allDrivers) {
+            if (isDriverAvailable(driver, startDate, endDate)){
+                return driver;
+            }
+        }
+        return null;
+    }
 
+    private boolean isDriverAvailable(Driver driver, LocalDate startDate, LocalDate endDate) {
+        if (!driver.getIsAvailable()){
+            return false;
+        }
+        List<CarRental> driverMissions = carRentalRepository.findByDriver_EmailOrderById(driver.getEmail());
+        for (CarRental mission: driverMissions) {
+            boolean conditions1 = startDate.isAfter(mission.getStartDate()) && startDate.isBefore(mission.getEndDate());
+            boolean conditions2 = endDate.isAfter(mission.getStartDate()) && endDate.isBefore(mission.getEndDate());
+            if (conditions1 || conditions2){
+                return false;
+            }
+        }
+        return true;
+    }
     @Override
     public void delete(final Long id) {
         driverRepository.deleteById(id);

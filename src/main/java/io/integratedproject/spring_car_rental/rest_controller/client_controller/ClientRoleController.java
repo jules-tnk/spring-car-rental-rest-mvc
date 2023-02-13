@@ -11,6 +11,8 @@ import io.integratedproject.spring_car_rental.entity.user_management.AppUser;
 import io.integratedproject.spring_car_rental.entity.user_management.Driver;
 import io.integratedproject.spring_car_rental.repository.*;
 import io.integratedproject.spring_car_rental.service.impl.CarRentalServiceImpl;
+import io.integratedproject.spring_car_rental.service.impl.CarServiceImpl;
+import io.integratedproject.spring_car_rental.service.impl.DriverServiceImpl;
 import io.integratedproject.spring_car_rental.service.impl.PaymentServiceImpl;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -38,21 +40,30 @@ public class ClientRoleController {
     private final ClientRepository clientRepository;
     private final CarRepository carRepository;
     private AppUserRepository appUserRepository;
+    private final DriverServiceImpl driverService;
     private final DriverRepository driverRepository;
+    private final CarServiceImpl carService;
+    private final CarDescriptionRepository carDescriptionRepository;
 
     public ClientRoleController(CarRentalServiceImpl carRentalService,
                                 CarRentalRepository carRentalRepository,
                                 PaymentServiceImpl paymentService, ClientRepository clientRepository,
                                 CarRepository carRepository,
                                 AppUserRepository appUserRepository,
-                                DriverRepository driverRepository) {
+                                DriverServiceImpl driverService,
+                                DriverRepository driverRepository,
+                                CarServiceImpl carService,
+                                CarDescriptionRepository carDescriptionRepository) {
         this.carRentalService = carRentalService;
         this.carRentalRepository = carRentalRepository;
         this.paymentService = paymentService;
         this.clientRepository = clientRepository;
         this.carRepository = carRepository;
         this.appUserRepository = appUserRepository;
+        this.driverService = driverService;
         this.driverRepository = driverRepository;
+        this.carService = carService;
+        this.carDescriptionRepository = carDescriptionRepository;
     }
 
 
@@ -68,7 +79,6 @@ public class ClientRoleController {
         }
 
         String currentUserEmail = authentication.getName();
-        System.out.println("Current user "+currentUserEmail);
 
         CarRental newCarRental = new CarRental();
 
@@ -77,33 +87,24 @@ public class ClientRoleController {
                 appUserRepository.findByEmailIgnoreCase(currentUserEmail)
         );
 
-        // find and set first car available by car description id
-        Optional<Car> carToRentOpt = carRepository.findFirstByCarDescription_IdAndAndIsAvailableIsTrue(
-                carRentalRequest.getCarDescriptionId()
-        );
-        try {
-
-            if (carToRentOpt.isEmpty()){
-                throw new NotFoundException("No car available");
-            }
-        }
-        catch (Exception e) {
-            throw new NotFoundException("No car available");
-        }
-
-        newCarRental.setCar(carToRentOpt.get());
-        carToRentOpt.get().setIsAvailable(false);
-        carRepository.save(carToRentOpt.get());
-
         // set start and end date from dates in request
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        newCarRental.setStartDate(
-                LocalDate.parse(carRentalRequest.getStartDateString(), dateFormatter)
-        );
+        LocalDate startDate = LocalDate.parse(carRentalRequest.getStartDateString(), dateFormatter);
+        LocalDate endDate = LocalDate.parse(carRentalRequest.getEndDateString(), dateFormatter);
+        newCarRental.setStartDate(startDate);
+        newCarRental.setEndDate(endDate);
 
-        newCarRental.setEndDate(
-                LocalDate.parse(carRentalRequest.getEndDateString(), dateFormatter)
+        // find and set first car available by car description
+        Car carToRent = carService.selectAvailableCar(
+                carDescriptionRepository.findById(carRentalRequest.getCarDescriptionId()).get(),
+                startDate,
+                endDate
         );
+        if (carToRent == null){
+            throw new NotFoundException("No car available");
+        }
+        newCarRental.setCar(carToRent);
+
         // calculate total price
         newCarRental.setTotalPrice(
                 carRentalService.calculateTotalPrice(
@@ -113,19 +114,18 @@ public class ClientRoleController {
                 )
         );
 
+        // select and add driver if wished by the tenant
         if (carRentalRequest.getIsWithDriver()){
-            newCarRental.setIsWithDriver(true);
+            Driver driver = driverService.selectAvailableDriver(startDate, endDate);
 
-            Optional<Driver> driverOpt = driverRepository.findFirstByIsAvailableIsTrue();
-            if (driverOpt.isEmpty()){
-                throw new NotFoundException("No driver available");
+            if (driver == null){
+                throw new NotFoundException("No driver Available");
             }
-            driverOpt.get().setIsAvailable(false);
-            driverRepository.save(driverOpt.get());
-            newCarRental.setDriver(driverOpt.get());
+
+            newCarRental.setIsWithDriver(true);
+            newCarRental.setDriver(driver);
             newCarRental.setTotalPrice(newCarRental.getTotalPrice()+120);
         }
-
 
         newCarRental.setStatus(RentalStatus.RESERVED);
 
