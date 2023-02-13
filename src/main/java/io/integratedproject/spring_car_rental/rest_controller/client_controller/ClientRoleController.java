@@ -1,5 +1,6 @@
 package io.integratedproject.spring_car_rental.rest_controller.client_controller;
 
+import io.integratedproject.spring_car_rental.DTO.PaymentDTO;
 import io.integratedproject.spring_car_rental.DTO.incoming_request.CarRentalRequest;
 import io.integratedproject.spring_car_rental.DTO.response.CarRentalResponseDTO;
 import io.integratedproject.spring_car_rental.DTO.response.ProfileResponse;
@@ -10,6 +11,7 @@ import io.integratedproject.spring_car_rental.entity.user_management.AppUser;
 import io.integratedproject.spring_car_rental.entity.user_management.Driver;
 import io.integratedproject.spring_car_rental.repository.*;
 import io.integratedproject.spring_car_rental.service.impl.CarRentalServiceImpl;
+import io.integratedproject.spring_car_rental.service.impl.PaymentServiceImpl;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -32,6 +34,7 @@ import java.util.Optional;
 public class ClientRoleController {
     private final CarRentalServiceImpl carRentalService;
     private final CarRentalRepository carRentalRepository;
+    private final PaymentServiceImpl paymentService;
     private final ClientRepository clientRepository;
     private final CarRepository carRepository;
     private AppUserRepository appUserRepository;
@@ -39,12 +42,13 @@ public class ClientRoleController {
 
     public ClientRoleController(CarRentalServiceImpl carRentalService,
                                 CarRentalRepository carRentalRepository,
-                                ClientRepository clientRepository,
+                                PaymentServiceImpl paymentService, ClientRepository clientRepository,
                                 CarRepository carRepository,
                                 AppUserRepository appUserRepository,
                                 DriverRepository driverRepository) {
         this.carRentalService = carRentalService;
         this.carRentalRepository = carRentalRepository;
+        this.paymentService = paymentService;
         this.clientRepository = clientRepository;
         this.carRepository = carRepository;
         this.appUserRepository = appUserRepository;
@@ -157,6 +161,18 @@ public class ClientRoleController {
         }
 
         return new ResponseEntity<>(profileResponse, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/add/payment")
+    public ResponseEntity<Void> addPayment(@RequestBody final PaymentDTO paymentDTO) {
+        paymentService.create(paymentDTO);
+        CarRental carRental = carRentalRepository.findById(paymentDTO.getCarRentalId()).get();
+        carRental.setAlreadyPaid(carRental.getAlreadyPaid()+paymentDTO.getAmount());
+        if (carRental.getAlreadyPaid() >= carRental.getTotalPrice()){
+            carRental.setIsPaymentCompleted(true);
+        }
+        carRentalRepository.save(carRental);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/history/{id}")
