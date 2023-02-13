@@ -13,7 +13,7 @@
                 </div>
             </div>
             <div th:replace="~{fragments/forms::globalErrors('driver')}" />
-            <form th:action="${T(io.bootify.spring_car_rental.util.WebUtils).getRequest().requestURI}" method="post">
+            <form th:action="${T(io.integratedproject.spring_car_rental.util.WebUtils).getRequest().requestURI}" method="post">
                 <div th:replace="~{fragments/forms::inputRow(object='driver', field='firstName')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='driver', field='lastName')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='driver', field='email')}" />
