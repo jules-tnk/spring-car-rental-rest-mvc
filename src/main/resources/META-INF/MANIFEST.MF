@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: io.integratedproject.spring_car_rental.SpringCarRentalApplic
+ ation
+
