@@ -17,7 +17,7 @@
                 <div th:replace="~{fragments/forms::inputRow(object='client', field='firstName')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='client', field='lastName')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='client', field='email')}" />
-                <div th:replace="~{fragments/forms::inputRow(object='client', field='phoneNumber')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='client', field='phoneNumber', type='number')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='client', field='password')}" />
                 <input type="submit" th:value="#{client.add.headline}" class="btn btn-primary mt-4" />
             </form>

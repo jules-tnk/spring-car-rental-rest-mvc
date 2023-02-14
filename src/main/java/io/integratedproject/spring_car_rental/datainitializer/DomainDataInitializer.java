@@ -49,9 +49,9 @@ public class DomainDataInitializer implements ApplicationListener<ContextRefresh
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (alreadySetup) {return;}
-        initializeCars();
+        /*initializeCars();
         initializeAgency();
-        initializeUsers();
+        initializeUsers();*/
 
         alreadySetup = true;
     }
